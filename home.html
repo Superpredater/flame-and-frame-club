@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flame & Frame | Photography Club</title>
+  <style>
+    /* Reset & Base */
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", Arial, sans-serif; }
+    body { background: #fff; color: #333; line-height: 1.7; scroll-behavior: smooth; }
+    h1,h2 { font-weight: 700; }
+    p { font-size: 1.05rem; color: #555; }
+
+    /* Hero Header with Slideshow */
+    header {
+      position: relative;
+      height: 100vh;
+      color: #fff;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .slideshow {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+    }
+
+    .slide {
+      position: absolute;
+      width: 100%; height: 100%;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+    .slide.active { opacity: 1; }
+
+    /* Overlay */
+    header::after {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.55);
+      z-index: 1;
+    }
+
+    header .hero {
+      position: relative;
+      z-index: 2;
+    }
+
+    header h1 { font-size: 1.8rem; margin-bottom: 1rem; }
+   
+    .btn {
+      display: inline-block; background: #e63946; color: #fff;
+      padding: 0.9rem 1.6rem; font-size: 1.1rem; border-radius: 8px;
+      text-decoration: none; transition: background 0.3s;
+    }
+    .btn:hover { background: #c72f3b; }
+
+    /* Arrows */
+    .arrow {
+      position: absolute;
+      top: 50%; transform: translateY(-50%);
+      font-size: 2.5rem; color: #fff;
+      background: rgba(0,0,0,0.4);
+      padding: 10px; border-radius: 50%;
+      cursor: pointer; z-index: 3;
+      transition: background 0.3s;
+    }
+    .arrow:hover { background: rgba(0,0,0,0.7); }
+    .arrow.left { left: 20px; }
+    .arrow.right { right: 20px; }
+
+    /* Navigation */
+    nav { display: flex; justify-content: center; background: #fff; padding: 1rem; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 1000; }
+    nav a { color: #444; margin: 0 18px; text-decoration: none; font-weight: 500; padding: 6px 4px; transition: color 0.3s, border-bottom 0.3s; }
+    nav a:hover { color: #e63946; border-bottom: 2px solid #e63946; }
+
+    /* Sections */
+    section { padding: 4rem 2rem; text-align: center; }
+    section h2 { font-size: 2rem; margin-bottom: 1rem; color: #222; position: relative; display: inline-block; }
+    section h2::after { content: ""; display: block; width: 60px; height: 3px; margin: 0.5rem auto; background: #e63946; border-radius: 2px; }
+    section p { max-width: 850px; margin: auto; }
+
+    /* Gallery */
+    .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 22px; margin-top: 2.5rem; }
+    .gallery a { text-decoration: none; color: inherit; }
+    .gallery-item { 
+      background: #fff; border-radius: 14px; 
+      overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      text-align: center;
+    }
+    .gallery-item:hover { transform: translateY(-6px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+    .gallery-item img { width: 100%; height: 200px; object-fit: cover; border-bottom: 3px solid #e63946; }
+    .gallery-item p { padding: 0.8rem; font-weight: 600; color: #222; background: #fafafa; }
+
+    /* Team */
+    .team { max-width: 1100px; margin: auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 25px; margin-top: 2.5rem; }
+    .team-card { background: #fff; border-radius: 14px; padding: 2rem 1.2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .team-card:hover { transform: translateY(-6px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+    .team-card img { width: 120px; height: 120px; border-radius: 50%; margin-bottom: 1rem; object-fit: cover; border: 3px solid #e63946; }
+    .team-card h3 { font-size: 1.3rem; margin-bottom: 5px; color: #222; }
+    .team-card p { font-size: 1rem; color: #666; }
+
+    /* Contact */
+    .contact { background: #fafafa; padding: 3rem 2rem; border-top: 1px solid #eee; }
+    .contact p { margin-bottom: 1rem; }
+    .contact-links { margin-top: 1rem; }
+    .contact a { display: inline-block; margin: 0 10px; text-decoration: none; font-size: 1.1rem; font-weight: 500; color: #fff; background: #e63946; padding: 0.7rem 1.4rem; border-radius: 8px; transition: background 0.3s; }
+    .contact a:hover { background: #c72f3b; }
+
+    /* Footer */
+    footer { background: #f7f7f7; color: #555; text-align: center; padding: 1.2rem; font-size: 0.9rem; border-top: 1px solid #eee; }
+
+    /* Mobile */
+    @media (max-width: 600px) {
+      header h1 { font-size: 2.2rem; }
+      nav { flex-direction: column; }
+      nav a { margin: 8px 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Hero Header -->
+  <header>
+    <!-- Slideshow background -->
+    <div class="slideshow">
+      <div class="slide active" style="background-image: url('/images/slide 1.JPG');"></div>
+      <div class="slide" style="background-image: url('/images/slide 2.JPG');"></div>
+      <div class="slide" style="background-image: url('/images/slide 3.JPG');"></div>
+      <div class="slide" style="background-image: url('/images/slide 4.JPG');"></div>
+    </div>
+
+    <!-- Arrows -->
+    <div class="arrow left" onclick="changeSlide(-1)">&#10094;</div>
+    <div class="arrow right" onclick="changeSlide(1)">&#10095;</div>
+
+    <div class="hero">
+      <h1>Flame & Frame Photography Club</h1>
+      <a href="#gallery" class="btn">View Our Work</a>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav>
+    <a href="#gallery">Gallery</a>
+    <a href="#about">About</a>
+    <a href="#team">Team</a>
+    <a href="#contact">Contact</a>
+  </nav>
+
+  <!-- Gallery -->
+  <section id="gallery">
+    <h2>Our Gallery</h2>
+    <p>A glimpse of creativity from our student photographers</p>
+    <div class="gallery">
+
+      <!-- Event 1 -->
+      <a href="https://drive.google.com/drive/folders/1mC_-0MLJ_rRNjzbtnjM_tEOe7wbqjPfB?usp=sharing" target="_blank">
+        <div class="gallery-item">
+          <img src="/images/slide 1.JPG" alt="Independence Day">
+          <p>Independence Day 2025</p>
+        </div>
+      </a>
+
+      <!-- Event 2 -->
+      <a href="" target="_blank">
+        <div class="gallery-item">
+          <img src="images/OIP.webp" alt="Orientation Day">
+          <p>Orientation Day 2025-26</p>
+        </div>
+      </a>
+
+      <!-- Event 3 -->
+      <a href="" target="_blank">
+        <div class="gallery-item">
+          <img src="/images/OIP.webp" alt="Workshop">
+          <p>Photography Workshop</p>
+        </div>
+      </a>
+
+      <!-- Event 4 -->
+      <a href="" target="_blank">
+        <div class="gallery-item">
+          <img src="images/OIP.webp" alt="Sports Day">
+          <p>Upcoming soon</p>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="about">
+    <h2>About Us</h2>
+    <p><b>Flame & Frame</b> is the official photography club of our college.  
+      We capture not just pictures, but memories that last forever.  
+      From cultural fests to seminars, from campus life to creative projects – our mission is to empower students with photography skills and showcase the beauty of every moment.</p>
+  </section>
+
+  <!-- Team -->
+  <section id="team">
+    <h2>Our Team</h2>
+    <div class="team">
+      <div class="team-card">
+        <img src="images/pic.jpg" alt="Founder">
+        <h3>Sanjay Pillai</h3>
+        <p>Club President</p>
+      </div>
+      <div class="team-card">
+        <img src="images/preeti.jpg" alt="Co-Founder">
+        <h3>Preethi Sharma</h3>
+        <p>Vice President</p>
+      </div>
+      <div class="team-card">
+        <img src="images/Astha.jpg" alt="Event Manager">
+        <h3>Astha Sharma</h3>
+        <p>Event Manager</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="contact">
+    <h2>Contact Us</h2>
+    <p>Want to join us or collaborate? Let’s connect!</p>
+    <div class="contact-links">
+      <a href="mailto:photographypassion301.blr@gmail.com">📧 Email</a>
+      <a href="https://www.instagram.com/flameandframe_official?igsh=MWVqbG5wN3k1MzVxYQ==" target="_blank">📷 Instagram</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 Flame & Frame Photography Club | Our College | All Rights Reserved</p>
+  </footer>
+
+  <!-- Slideshow Script -->
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll(".slide");
+
+    function showSlide(index) {
+      slides.forEach((slide, i) => {
+        slide.classList.remove("active");
+        if (i === index) slide.classList.add("active");
+      });
+    }
+
+    function changeSlide(direction) {
+      currentSlide = (currentSlide + direction + slides.length) % slides.length;
+      showSlide(currentSlide);
+    }
+
+    // Auto change every 6s
+    setInterval(() => changeSlide(1), 6000);
+  </script>
+
+</body>
+</html>
